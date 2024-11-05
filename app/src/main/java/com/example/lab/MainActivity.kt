@@ -28,10 +28,16 @@ import androidx.compose.foundation.clickable
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.ExperimentalAnimationApi
-
 import androidx.compose.animation.with
 import androidx.compose.material3.MaterialTheme
-
+import androidx.compose.animation.*
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.Text
+import androidx.compose.runtime.*
+import androidx.compose.ui.unit.dp
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -40,10 +46,11 @@ class MainActivity : ComponentActivity() {
         setContent {
             LabTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    AnimatedVisibilityExample()
-                    AnimateColorExample()
-                    AnimateSizeAndPositionExample()
-                    AnimatedContentExample()
+                    //AnimatedVisibilityExample()
+                    //AnimateColorExample()
+                    //AnimateSizeAndPositionExample()
+                    //AnimatedContentExample()
+                    CombinedAnimationsExample()
                     Greeting(
                         name = "Android",
                         modifier = Modifier.padding(innerPadding)
@@ -162,6 +169,54 @@ fun AnimatedContentExample() {
                     else -> ""
                 },
                 style = MaterialTheme.typography.bodyLarge
+            )
+        }
+    }
+}
+@Composable
+fun CombinedAnimationsExample() {
+    var isExpanded by remember { mutableStateOf(false) }
+    var isButtonVisible by remember { mutableStateOf(true) }
+    var isLightMode by remember { mutableStateOf(true) }
+
+    val size by animateDpAsState(targetValue = if (isExpanded) 150.dp else 100.dp)
+    val color by animateColorAsState(
+        targetValue = if (isExpanded) Color.Magenta else Color.Cyan,
+        animationSpec = tween(durationMillis = 1000)
+    )
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(if (isLightMode) Color.White else Color.Black),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Box(
+            modifier = Modifier
+                .size(size)
+                .background(color)
+                .clickable { isExpanded = !isExpanded }
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        AnimatedVisibility(
+            visible = isButtonVisible,
+            enter = fadeIn() + slideInVertically(),
+            exit = fadeOut() + slideOutVertically()
+        ) {
+            Button(onClick = { isButtonVisible = !isButtonVisible }) {
+                Text("Desaparecer Boton")
+            }
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+        AnimatedContent(targetState = isLightMode) { targetMode ->
+            Text(
+                text = if (targetMode) "Modo Claro" else "Modo Oscuro",
+                color = if (isLightMode) Color.Black else Color.White,
+                modifier = Modifier.clickable { isLightMode = !isLightMode }
             )
         }
     }
