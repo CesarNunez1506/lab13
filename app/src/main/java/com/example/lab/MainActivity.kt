@@ -37,6 +37,7 @@ class MainActivity : ComponentActivity() {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     AnimatedVisibilityExample()
                     AnimateColorExample()
+                    AnimateSizeAndPositionExample()
                     Greeting(
                         name = "Android",
                         modifier = Modifier.padding(innerPadding)
@@ -98,6 +99,29 @@ fun AnimateColorExample() {
         contentAlignment = Alignment.Center
     ) {
         Text("Clic para cambiar el color", color = Color.White)
+    }
+}@Composable
+fun AnimateSizeAndPositionExample() {
+    var isExpanded by remember { mutableStateOf(false) }
+    val size by animateDpAsState(targetValue = if (isExpanded) 200.dp else 100.dp)
+    val offset by animateDpAsState(targetValue = if (isExpanded) 100.dp else 0.dp)
+
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Button(onClick = { isExpanded = !isExpanded }) {
+            Text("Cambiar tamaño y posicion")
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Box(
+            modifier = Modifier
+                .size(size)
+                .offset(x = offset, y = offset)
+                .background(Color.Red)
+        )
     }
 }
 @Preview(showBackground = true)
