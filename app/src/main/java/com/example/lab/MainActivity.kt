@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.lab.ui.theme.LabTheme
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
@@ -22,6 +23,10 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
+import androidx.compose.animation.core.animateDpAsState
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -31,6 +36,7 @@ class MainActivity : ComponentActivity() {
             LabTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     AnimatedVisibilityExample()
+                    AnimateColorExample()
                     Greeting(
                         name = "Android",
                         modifier = Modifier.padding(innerPadding)
@@ -74,6 +80,24 @@ fun AnimatedVisibilityExample() {
                     .background(Color.Blue)
             )
         }
+    }
+}
+@Composable
+fun AnimateColorExample() {
+    var isBlue by remember { mutableStateOf(true) }
+    val color by animateColorAsState(
+        targetValue = if (isBlue) Color.Blue else Color.Green,
+        animationSpec = tween(durationMillis = 1000)
+    )
+
+    Box(
+        modifier = Modifier
+            .size(100.dp)
+            .background(color)
+            .clickable { isBlue = !isBlue },
+        contentAlignment = Alignment.Center
+    ) {
+        Text("Clic para cambiar el color", color = Color.White)
     }
 }
 @Preview(showBackground = true)
