@@ -25,8 +25,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
 import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.ExperimentalAnimationApi
+
+import androidx.compose.animation.with
+import androidx.compose.material3.MaterialTheme
+
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -38,6 +43,7 @@ class MainActivity : ComponentActivity() {
                     AnimatedVisibilityExample()
                     AnimateColorExample()
                     AnimateSizeAndPositionExample()
+                    AnimatedContentExample()
                     Greeting(
                         name = "Android",
                         modifier = Modifier.padding(innerPadding)
@@ -122,6 +128,42 @@ fun AnimateSizeAndPositionExample() {
                 .offset(x = offset, y = offset)
                 .background(Color.Red)
         )
+    }
+}
+@OptIn(ExperimentalAnimationApi::class)
+@Composable
+fun AnimatedContentExample() {
+    var currentState by remember { mutableStateOf("Cargando") }
+
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Button(onClick = {
+            currentState = when (currentState) {
+                "Cargando" -> "Contenido"
+                "Contenido" -> "Error"
+                else -> "Cargando"
+            }
+        }) {
+            Text("Change State")
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        AnimatedContent(targetState = currentState, transitionSpec = {
+            fadeIn(animationSpec = tween(300)) with fadeOut(animationSpec = tween(300))
+        }) { targetState ->
+            Text(
+                text = when (targetState) {
+                    "Cargando" -> "Cargando..."
+                    "Contenido" -> "¡Contenido cargado!"
+                    "Error" -> "Se produjo un error."
+                    else -> ""
+                },
+                style = MaterialTheme.typography.bodyLarge
+            )
+        }
     }
 }
 @Preview(showBackground = true)
